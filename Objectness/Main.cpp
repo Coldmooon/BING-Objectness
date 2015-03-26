@@ -32,7 +32,7 @@ int main(int argc, char* argv[])
 void RunObjectness(CStr &resName, double base, int W, int NSS, int numPerSz)
 {
     srand((unsigned int)time(NULL));
-    DataSetVOC voc("/Users/Coldmoon/ComputerVisionApps/BING_from_nagaraja/VOC2007/");
+    DataSetVOC voc("/Users/Coldmoon/ComputerVisionApps/BING_from_nagaraja/BING/VOC2007/");
     voc.loadAnnotations();
     //voc2007.loadDataGenericOverCls();
     
