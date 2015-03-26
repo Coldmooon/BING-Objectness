@@ -6,3 +6,4 @@ libBLAS.a
 libLIBLINEAR.a
 BING
 VOC2007/Annotations
+build/
