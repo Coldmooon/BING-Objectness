@@ -91,7 +91,7 @@ void Objectness::predictBBoxSI(CMat &img3u, ValStructVec<float, Vec4i> &valBoxes
 		height = min(height, imgH), width = min(width, imgW);
 		Mat im3u, matchCost1f, mag1u;
         
-        // 这里会把图像缩放到固定大小，如论文中所说。
+        // 这里会把图像缩放到固定大小，如论文中所说。大小是W的整数倍,即8的整数倍。
 		resize(img3u, im3u, Size(cvRound(_W*imgW*1.0/width), cvRound(_W*imgH*1.0/height)));
 		gradientMag(im3u, mag1u); // 每个元素用一个字节存储。
         cout << "mag1u size: (" << mag1u.size() << ")" << ": " << endl;
