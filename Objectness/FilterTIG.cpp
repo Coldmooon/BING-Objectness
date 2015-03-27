@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "FilterTIG.h"
 #include "CmShow.h"
-
+#include <iomanip>
 
 void FilterTIG::update(CMat &w1f){
 	CV_Assert(w1f.cols * w1f.rows == D && w1f.type() == CV_32F && w1f.isContinuous());
@@ -70,7 +70,7 @@ Mat FilterTIG::matchTemplate(const Mat &mag1u){
 	Mat_<byte> Row4 = Mat_<byte>::zeros(sz), Row8 = Mat_<byte>::zeros(sz);
 	
     // 分数图的大小和梯度图的大小一样。
-    Mat_<float> scores(sz); // 访问scores，可以直接像数组一样用 scores(x,y) 即可。
+    Mat_<float> scores = Mat_<float>::zeros(sz); // 访问scores，可以直接像数组一样用 scores(x,y) 即可。
     
     // 这一套循环可以计算完整个梯度图的分数。如果不采用 bitewise operation 的话，里面就还要再嵌套一个循环。
     // 这里 T1,T2,T4,T8 为什么要取 4 个指针呢？这是因为，根据论文中所说，Ng = 4。也就是对该梯度图中的每个“像素”，
@@ -110,9 +110,16 @@ Mat FilterTIG::matchTemplate(const Mat &mag1u){
 			T4[x] = (Tu4[x] << 8) | R4[x];
 			T8[x] = (Tu8[x] << 8) | R8[x];
 			s[x] = dot(T1[x], T2[x], T4[x], T8[x]); // 论文中的公式 6。
+            cout << "scores:\n" << fixed << setprecision(10) << scores << endl;
 		}
 	}
 	Mat matchCost1f;
+    // Rect(8, 8, W-7, H-7) 之外的区域，会将填充“像素”计算了进去，因此忽略掉。
+    // 这时，你可能会问：不是说梯度图与分数图是一一对应的吗？如果将分数图中的一部分忽略掉，那岂不是导致了梯度图中同位置的像素就没有分数了吗？
+    // 答案是：这里说的分数图与梯度图一一对应，是指梯度图中每个位置上的像素都需要计算一个分数，即梯度图中的每个位置都会得到一个分数。
+    // 但是这句话并没有说，我是如何计算分数的。实际上，每个位置分数的计算，都是以该像素为基础，其左上角8*8区域内的“区域”分数。
+    // 也就是说，分数是针对区域的，而不是单个像素。因此，即使我在分数图中丢弃了一部分结果，但是，剩余部分的分数，仍然包含了整个梯度图的信息。
+    // 所以不会造成信息损失。Rect(8, 8, W-7, H-7) 是梯度图的整个右下角，从点（8，8）右至图像右边界，下至图像下边界。
 	scores(Rect(8, 8, W-7, H-7)).copyTo(matchCost1f);
     cout << "scores:\n" << scores << endl;
     cout << "matchCost1f: \n" << matchCost1f << endl;
