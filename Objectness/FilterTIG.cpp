@@ -109,7 +109,7 @@ Mat FilterTIG::matchTemplate(const Mat &mag1u){
 			T2[x] = (Tu2[x] << 8) | R2[x];  // R2 就是一个BING特征图的最后一行
 			T4[x] = (Tu4[x] << 8) | R4[x];
 			T8[x] = (Tu8[x] << 8) | R8[x];
-			s[x] = dot(T1[x], T2[x], T4[x], T8[x]); // 这里应该是类似积分直方图的算法。
+			s[x] = dot(T1[x], T2[x], T4[x], T8[x]); // 论文中的公式 6。
 		}
 	}
 	Mat matchCost1f;
